@@ -1,117 +1,120 @@
-"""
-This script scrapes the dynamic data available through the Dublin Bikes API
-It then adds it to the RDS database
-It is being run every 5 mins on an EC2 instance using cron
-Its print output is being added to a trace file on the EC2 instance
-"""
-
-from cmath import e
-from datetime import datetime
-import datetime
-from tkinter import E
-import requests
-import sqlalchemy as sqla
-from sqlalchemy import create_engine
+from http.client import ImproperConnectionState
+from shutil import register_unpack_format
+import datetime as dt
 import traceback
-import glob
-import os
-from pprint import pprint
+from tracemalloc import start
+from pymysql import IntegrityError
+import requests
+import pytz
 import time
-from IPython.display import display
-import pymysql
-import json
-db = pymysql.connect(
-    host="dbbikes.ccmhqwttjfav.us-east-1.rds.amazonaws.com",
-    user="admin",
-    password="12345678",
-    port=3306,
-    database="dbbikes")
-cursor=db.cursor()
+from sqlalchemy import *
+from sqlalchemy import Table, Column, Integer, Float, String, DateTime
+from sqlalchemy import MetaData
+from sqlalchemy import create_engine
 
+NAME = "Dublin"
+STATIONS = "https://api.jcdecaux.com/vls/v1/stations"
+APIKEY = "e2e86989774502711e895376db54cddc35bd6d30"
+USER = "admin"
+PASSWORD = "12345678"
+HOST = "dbbikes.ccmhqwttjfav.us-east-1.rds.amazonaws.com"
+PORT = "3306"
+DATABASE = "dbbikes"
+engine = create_engine("mysql+pymysql://{}:{}@{}:{}/{}".format(USER, PASSWORD, HOST, PORT, DATABASE), echo=True)
+connection = engine.connect()
+r = requests.get("https://api.jcdecaux.com/vls/v1/stations?apiKey=e2e86989774502711e895376db54cddc35bd6d30&contract=Dublin")
 
+def initialise_db():
+    # Generate a metaDate object
+    metadata = MetaData(bind=engine)
 
-sql="""
-CREATE  TABLE IF NOT EXISTS station(
-address VARCHAR(256),
-banking INTEGER,
-bike_stands INTEGER,
-bonus INTEGER,
-contract_name VARCHAR(256),
-name VARCHAR(256),
-number INTEGER,
-position_lat REAL,
-position_lng REAL,
-status VARCHAR(256)
-)
-"""
-try:
-    cursor.execute(sql)
-except Exception as e:
-    print(e)
-sql="""
-CREATE TABLE IF NOT EXISTS availability(
-number INTEGER,
-available_bikes INTEGER,
-available_bike_stands INTEGER,
-last_update INTEGER
-)
+    with engine.connect() as conn:
+        # Create a static data table and determine if there is a station table
+        if engine.dialect.has_table(conn, "station") is False:
+            station = Table('station', metadata,
+                            Column('number', Integer, primary_key=True),
+                            Column('name', String(128)),
+                            Column('address', String(128)),
+                            Column('position_lat', Float),
+                            Column('position_lng', Float),
+                            Column('bike_stands', Integer),
+                            Column('banking', Integer),
+                            Column('bonus', Integer),
+                            Column('contract_name', String(128))
+                            )
 
-"""
-try:
-    cursor.execute(sql)
-except Exception as e:
-    print(e)
+            try:
+                metadata.create_all(engine)
+                # Get station data
+                values = map(get_stations, r.json())
+                # Write static data first
+                write_to_db("station", values)
+            except:
+                traceback.format_exc()
+        #Create dynamic data tables availability
+        if engine.dialect.has_table(conn, "availability") is False:
+            availability = Table('availability', metadata,
+                                 Column('number', Integer, primary_key=True),
+                                 Column('last_update', DateTime, primary_key=True),
+                                 Column('available_bike_stands', Integer),
+                                 Column('available_bikes', Integer),
+                                 Column('status', String(128)))
 
-api_key = "fc31aed31ee8e2ae5c2a3f75172b9167873f1bc9"
-URL = "https://api.jcdecaux.com/vls/v1/stations?contract=dublin&apiKey=" + api_key
+            try:
+                #Because dynamic data needs to be captured in real time, create only tables first
+                metadata.create_all(engine)
+            except:
+                traceback.formal_exc()
 
-def write_to_file(text):
-    with open("data/bike_{}".format(now).replace(" ","_"),"w") as f:
-        f.write(r.text)
+        return
 
-def write_to_db(text):
-    print(text)
+# Write static data to station table
+def write_to_db(table_name, values):
+    metadata = MetaData()
+    metadata.reflect(bind=engine)
+    table = metadata.tables.get(table_name)
 
-def main():
-    while True: 
-        try:
-        # Make the get request
-            now=datetime.datetime.now()
-            r = requests.get(url=URL)
-            print(r,now)
-            write_to_file(r.text)
-            write_to_db(r.text)
-            time.sleep(5*60)
-        except requests.exceptions.RequestException as err:
-            print("SOMETHING WENT WRONG:", err)
-            exit(1)
+    with engine.connect() as connection:
+        for val in values:
+            try:
+                res = connection.execute(table.insert().values(val))
+            except IntegrityError as err:
+                return
+#GetStaticData
+def get_stations(s):
+    return {'number': s['number'], 'name': s['name'], 'address': s['address'], 'position_lat': s['position']['lat'], 'position_lng': s['position']['lng'], 'bike_stands': s['bike_stands'], 'banking': s['banking'], 'bonus': s['bonus'], 'contract_name': s['contract_name']}
+#Access to dynamic data
+def get_availability(s):
+    if 'last_update' not in s or s['last_update'] is None:
+        return None
+    return {'number': int(s['number']), 'available_bike_stands': int(s['available_bike_stands']),
+            'available_bikes': int(s['available_bikes']),
+            'last_update': dt.datetime.fromtimestamp(int(s['last_update'] / 1e3)), 'status': s['status']}
+# Write dynamic data
+def store_availability():
+    try:
+        values = filter(lambda x: x is not None, map(get_availability, r.json()))
+        write_to_db('availability', values)
+    except:
+        traceback.format_exc()
+
     return
-def stations_to_db(text):
-    stations=json.loads(text)
-    print(type(stations),len(stations))
-    for station in stations:
-        print("&&&&&&&&&")
-        print(station)
-        print("*******")
-        vals=(station.get('address'),int(station.get('banking')),station.get('bike_stands'),int(station.get('bonus')),station.get('contract_name'),station.get('name'),station.get('number'),station.get('position').get('lat'),
-        station.get('position').get('lng'),station.get('status')
-        )
-        vals1=(station.get('number'),station.get('available_bikes'),station.get('available_bike_stands'),station.get('last_update')
-        )
-        print(vals1)
-        cursor.execute("INSERT INTO station values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",vals)
-        db.commit()
-        cursor.execute("INSERT INTO availability values(%s,%s,%s,%s)",vals1)
-        db.commit()
+#main function
+def main():
+    # First initialize the database
+    initialise_db()
+    #Cyclic capture of dynamic data.
+    while True:
+        # Get the current time in Dublin
+        now = dt.datetime.now(tz=pytz.timezone('Europe/Dublin')).time()
+        #Not necessary to get data in the evening, so judge the time
+        if now >= dt.time(5, 0) or now <= dt.time(0, 30): 
+            store_availability()
 
-        
+        time.sleep(5 * 60)
 
-stations_to_db(r.text)
-
-db.close()
+    return
 
 
-
-
-
-    
+if __name__ == "__main__":
+    main()
