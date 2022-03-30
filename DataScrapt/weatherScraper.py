@@ -12,11 +12,11 @@ import json
 import pandas as pd
 
 db = pymysql.connect(
-    host="dbbikes.ccmhqwttjfav.us-east-1.rds.amazonaws.com",
+    host="dbbikes1.citjnbrbkplf.us-east-1.rds.amazonaws.com",
     user="admin",
     password="12345678",
     port=3306,
-    database="dbbikes")
+    database="dbbikes1")
 cursor = db.cursor()   
 
 sql = """

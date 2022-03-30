@@ -16,9 +16,9 @@ STATIONS = "https://api.jcdecaux.com/vls/v1/stations"
 APIKEY = "e2e86989774502711e895376db54cddc35bd6d30"
 USER = "admin"
 PASSWORD = "12345678"
-HOST = "dbbikes.ccmhqwttjfav.us-east-1.rds.amazonaws.com"
+HOST = "dbbikes1.citjnbrbkplf.us-east-1.rds.amazonaws.com"
 PORT = "3306"
-DATABASE = "dbbikes"
+DATABASE = "dbbikes1"
 
 @app.route("/")
 def hello():
