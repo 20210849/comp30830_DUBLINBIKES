@@ -6,9 +6,4 @@ dependencies:
   - pandas
   - jupyterlab
   - numpy
-  - sqlalchemy
-  - mysql-connector-c
-  - pymysql
-  - mysqlclient
-  - joblib
 prefix: /opt/anaconda3/envs/comp30830
