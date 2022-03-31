@@ -120,6 +120,7 @@ def write_to_db__availability():
     except:
         db.rollback()
         print("insert wrong")
+    db.close()
     
 
 db = pymysql.connect(
@@ -145,11 +146,11 @@ while True:
         # Get the current time in Dublin
     now = dt.datetime.now(tz=pytz.timezone('Europe/Dublin')).time()
         #Not necessary to get data in the evening, so judge the time
-    if now >= dt.time(5, 0) or now <= dt.time(0, 30): 
+    #if now >= dt.time(5, 0) or now <= dt.time(0, 30): 
         
-        write_to_db__availability()
-        time.sleep(5*60)
-    db.close()
+    write_to_db__availability()
+    time.sleep(5*60)
+    
 
 
 
