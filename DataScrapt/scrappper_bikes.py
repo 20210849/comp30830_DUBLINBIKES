@@ -148,7 +148,7 @@ while True:
     if now >= dt.time(5, 0) or now <= dt.time(0, 30): 
         
         write_to_db__availability()
-        time.sleep(5 * 60)
+        time.sleep(5*60)
     db.close()
 
 
