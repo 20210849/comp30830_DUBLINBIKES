@@ -144,7 +144,7 @@ while True:
     
     
         # Get the current time in Dublin
-    now = dt.datetime.now(tz=pytz.timezone('Europe/Dublin')).time()
+    #now = dt.datetime.now(tz=pytz.timezone('Europe/Dublin')).time()
         #Not necessary to get data in the evening, so judge the time
     #if now >= dt.time(5, 0) or now <= dt.time(0, 30): 
         
