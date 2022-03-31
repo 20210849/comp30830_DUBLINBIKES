@@ -40,16 +40,20 @@ def initialise_db():
         print(e)
     sql="""
     CREATE TABLE IF NOT EXISTS availability(
-        number INTEGER PRIMARY KEY,
-        last_update INTEGER PRIMARY KEY,
-        available_bike_stands DateTime,
-        available_bikes Integer,
-        status VARCHAR(128)
+        number INTEGER ,
+        last_update DateTime ,
+        available_bike_stands INTEGER,
+        available_bikes INTEGER,
+        status VARCHAR(128),
+        primary key (number,last_update ) 
+
     )
 
     """
     try:
+        print(sql)
         cursor.execute(sql)
+        print("create ok")
     except Exception as e:
         print(e)
     write_to_db_sation()
@@ -106,9 +110,12 @@ def write_to_db__availability():
     vals= get_availability()
     try:
         for val in vals:
-            sql = """INSERT INTO dbbikes1.availability (number,last_update,available_bike_stands,available_bikes,status) 
-            VALUES ('%s','%s','%s','%s','%s')""" % val
-            cursor.execute(sql)
+            sql = """INSERT INTO dbbikes1.availability(number,last_update,available_bike_stands,available_bikes,status) 
+            VALUES (%s,'%s',%s,%s,'%s')""" % val
+            print(sql)
+            a=cursor.execute(sql)
+            db.commit()
+            print(a)
             print("insert ok")
     except:
         db.rollback()
