@@ -61,7 +61,7 @@ function stationDropDown() {
     })
 }
 
-// Function to set user choice station and trigger other functions
+//Function to set user choice station and trigger other functions
 function setValue(control) {
     var choice = control.value;
     showSelected(choice);
@@ -106,7 +106,7 @@ function showSelected(chosenStation) {
 }
 
 
-// Function to display weekly analysis chart
+//Function to display weekly analysis chart
 function weeklyChart(station_number) {
     fetch("/occupancy/"+station_number).then(response => {
             return response.json();
@@ -162,7 +162,7 @@ function weeklyChart(station_number) {
 }
 
 
-// Function to display hourly analysis chart
+//Function to display hourly analysis chart
 function hourlyChart(station_number) {
     fetch("/hourly/"+station_number).then(response => {
             return response.json();
@@ -191,3 +191,65 @@ function hourlyChart(station_number) {
 }
 
 
+//Function to display weather forecast
+function displayWeather() {
+    fetch("/weather_forecast").then(response => {
+        return response.json();
+    }).then(data => {
+
+    console.log(data);
+
+   var today = new Date();
+   var current_date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+   var current_time = today.getHours();
+   console.log(current_date);
+   console.log(current_time);
+
+    var weather_output = "<ul>" + "<li><b>Current Temperature: </b>" + data[0].weather_description + "</li>"
+    + "<li><b>Wind Speed: </b>" + data[0].weather_main + "</li>"
+    + "<li><b>Chances of Rain: </b>" + data[0].humidity + "%</li>"
+    + "<li><b>Humidity: </b>" + data[0].wind_speed + "%</li></ul>";
+
+    document.getElementById("weather").innerHTML = weather_output;
+    }).catch(err => {
+        console.log("Error:", err);
+    })
+}
+
+// Prediction Function
+// function prediction(station) {
+//     fetch("/predict/"+station).then(response => {
+//         return response.json();
+//     }).then(data => {
+//     console.log(data)
+//     })
+// }
+
+// // Function to populate the select dropdown menu for prediction
+// function predictionDropDown() {
+//     fetch("/static_stations").then(response => {
+//         return response.json();
+//     }).then(data => {
+
+//     var station_output = "<form><label for='station_option'>Choose a station: </label>"
+//     + "<select name='station_option' id='station_option' onchange='setPredictionValue(this)'>"
+//     + "<option value='' disabled selected> ------------- </option><br>";
+
+//     data.forEach(station => {
+//         station_output += "<option value=" + station.number + ">" + station.name + "</option><br>";
+//     })
+
+//     station_output += "</select></form>";
+//     station_output += "<form><label for='future_date'>Future Date:</label>"
+//     + "<input type='date' id='future_date' name='future_date'><input type='submit'></form>";
+//     document.getElementById("prediction_area").innerHTML = station_output;
+//     }).catch(err => {
+//         console.log("Error:", err);
+//     })
+// }
+
+// // Function to set user choice station and trigger prediction function
+// function setPredictionValue(control) {
+//     var choice = control.value;
+// //    prediction(choice);
+// }

@@ -17,26 +17,36 @@
         <h1>Dublin Bikes</h1>
     </header>
 
+    <div id="weather"></div>
+
     <div id="user_choice">
         <div id="station_selection"></div>
     </div>
 
     <div id="map"></div>
 
+    <!--Line charts-->
+    <div id="analysis_title"></div>
+    <div id="analysis_area">
+            <div id="weekly_chart"></div>
+            <td><div id="hour_chart"></div>
+    </div>
+
+    <h2>PREDICT FUTURE BIKE AVAILABILITY</h2>
+    <div id="prediction_area"></div>
     <script>
         stationDropDown();
-        predictionDropDown();
+        //predictionDropDown();
         displayWeather();
 
         google.charts.load('current', {'packages':['corechart']});
 
     </script>
 
-
-    <script
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDbU4W2J29Zz3Jz8gkcgImNj4YRwgLZCoQ&callback=initMap&libraries=&v=weekly"
-      async
-    ></script>
+    <!-- Async script executes immediately and must be after any DOM elements used in callback. -->
+     <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDoxMoc5jrCrg7c7noB88amyEFVFB-1o10&callback=initMap&libraries=&v=weekly"
+    async></script>
 
 </body>
 </html>

@@ -1,3 +1,4 @@
+from ctypes.wintypes import PLARGE_INTEGER
 import json
 import pymysql
 from sqlalchemy import *
@@ -34,8 +35,8 @@ def stations():
 
     sql = "SELECT s.number, s.name, s.address, s.position_lat, s.position_lng, a.available_bike_stands, a.available_bikes, " \
           "a.status, MAX(a.last_update) AS `current_availability` " \
-          "FROM dbbikes.availability as a " \
-          "INNER JOIN dbbikes.station as s ON s.number = a.number " \
+          "FROM dbbikes1.availability as a " \
+          "INNER JOIN dbbikes1.station as s ON s.number = a.number " \
           "GROUP BY s.number " \
           "ORDER BY s.number;"
 
@@ -50,7 +51,7 @@ def static_stations():
     engine = create_engine("mysql+pymysql://{}:{}@{}:{}/{}".format(USER, PASSWORD, HOST, PORT, DATABASE), echo=True)
     connection = engine.connect()  
 
-    sql = "SELECT * FROM dbbikes.station " \
+    sql = "SELECT * FROM dbbikes1.station " \
           "ORDER BY name;"
 
     df = pd.read_sql(sql, engine)
@@ -65,8 +66,8 @@ def get_occupancy(station_id):
 
     sql = f"""SELECT s.name, avg(a.available_bike_stands) as Avg_bike_stands,
         avg(a.available_bikes) as Avg_bikes_free, DAYNAME(a.last_update) as DayName
-        FROM dbbikes.availability as a
-        JOIN dbbikes.station as s
+        FROM dbbikes1.availability as a
+        JOIN dbbikes1.station as s
         ON s.number = a.number
         WHERE s.number = {station_id}
         GROUP BY s.name , DayName 
@@ -84,8 +85,8 @@ def get_hourly_data(station_id):
 
     sql = f"""SELECT s.name,count(a.number),avg(available_bike_stands) as Avg_bike_stands,
         avg(available_bikes) as Avg_bikes_free,EXTRACT(HOUR FROM last_update) as Hourly
-        FROM dbbikes.availability as a
-        JOIN dbbikes.station as s
+        FROM dbbikes1.availability as a
+        JOIN dbbikes1.station as s
         ON s.number = a.number
         WHERE a.number = {station_id}
         GROUP BY EXTRACT(HOUR FROM last_update) 
@@ -94,6 +95,34 @@ def get_hourly_data(station_id):
     df = pd.read_sql(sql, engine)
 
     return df.to_json(orient="records")
+
+@app.route("/weather_forecast")
+def weather_forecast():
+    engine = create_engine("mysql+pymysql://{}:{}@{}:{}/{}".format(USER, PASSWORD, HOST, PORT, DATABASE), echo=True)
+    connection = engine.connect()  
+    print("************************")
+
+    sql = f"""SELECT weather_description, weather_main, humidity, wind_speed
+    FROM dbbikes1.weather_Dublin
+    ORDER BY dt DESC
+    LIMIT 1;"""
+
+    df = pd.read_sql(sql, engine)
+
+    return df.to_json(orient="records")
+
+
+@app.route('/predict/<int:station_id>')
+def predict(station_id):
+    model = load('availabilitypredictions.joblib')
+    avail_predict = model.predict([[station_id, 2, 5, 2, 4]])
+
+    predict_list = avail_predict.tolist()
+    predict_dict = {"bikes": predict_list[0]}
+    result = json.dumps(predict_dict)
+
+    return result
+
 
 
 if __name__ == "__main__":
