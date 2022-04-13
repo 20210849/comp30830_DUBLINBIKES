@@ -12,9 +12,19 @@ function initMap() {
         });
 
         data.forEach(station => {
+            var avaibaikeP=station.available_bikes/station.bike_stands*100;
+            var markurl="";
+            if(avaibaikeP>50){
+                markurl="http://maps.google.com/mapfiles/ms/icons/green.png";
+            }else if(avaibaikeP<50&&avaibaikeP>0){
+                markurl="http://maps.google.com/mapfiles/ms/icons/yellow.png";
 
+            }else{
+                markurl="http://maps.google.com/mapfiles/ms/icons/red.png";
+            }
             const marker = new google.maps.Marker({
                 position: { lat: station.position_lat, lng: station.position_lng },
+                icon: {url: markurl },  
                 map: map,
             });
             marker.addListener("click", () => {
