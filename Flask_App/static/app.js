@@ -32,6 +32,7 @@ function initMap() {
                 infowindow.open(map, marker);
                 weeklyChart(station.number);
                 hourlyChart(station.number);
+                prediction(station.number);
             });
         });
     }).catch(err => {
@@ -98,6 +99,7 @@ function showSelected(chosenStation) {
                 infowindow.open(map, marker);
                 weeklyChart(station.number);
                 hourlyChart(station.number);
+                prediction(station.number);
             }
         });
     }).catch(err => {
@@ -216,40 +218,73 @@ function displayWeather() {
     })
 }
 
+
+// Calculate the bike stands of each station
+function totalStands(station_number) {
+    fetch("/static_stations").then(response => {
+        return response.json();
+    }).then(data => {
+        console.log(data);
+
+        data.forEach(station => {
+            if (station.number == station_number){
+                document.getElementById("total_stands").innerHTML = "the numebr of bike stands is: " + station.bike_stands;
+            }
+        })  
+    }).catch(err => {
+        console.log("Error:", err);
+    })
+}
+
+
 // Prediction Function
-// function prediction(station) {
-//     fetch("/predict/"+station).then(response => {
-//         return response.json();
-//     }).then(data => {
-//     console.log(data)
-//     })
-// }
+function prediction(station) {
+    fetch("/predict/"+station).then(response => {
+        return response.json();
+    }).then(data => {
+    console.log(data);
 
-// // Function to populate the select dropdown menu for prediction
-// function predictionDropDown() {
-//     fetch("/static_stations").then(response => {
-//         return response.json();
-//     }).then(data => {
+    totalStands(station);
 
-//     var station_output = "<form><label for='station_option'>Choose a station: </label>"
-//     + "<select name='station_option' id='station_option' onchange='setPredictionValue(this)'>"
-//     + "<option value='' disabled selected> ------------- </option><br>";
+    var avaiable_prediction = data;
+    var output = "avaiable bikes: " + avaiable_prediction;
 
-//     data.forEach(station => {
-//         station_output += "<option value=" + station.number + ">" + station.name + "</option><br>";
-//     })
+    document.getElementById("prediction_result").innerHTML = output;
 
-//     station_output += "</select></form>";
-//     station_output += "<form><label for='future_date'>Future Date:</label>"
-//     + "<input type='date' id='future_date' name='future_date'><input type='submit'></form>";
-//     document.getElementById("prediction_area").innerHTML = station_output;
-//     }).catch(err => {
-//         console.log("Error:", err);
-//     })
-// }
+    }).catch(err => {
+        console.log("Error:", err);
+    })
+}
 
-// // Function to set user choice station and trigger prediction function
-// function setPredictionValue(control) {
-//     var choice = control.value;
-// //    prediction(choice);
-// }
+
+// Function to populate the select dropdown menu for prediction
+function predictionDropDown() {
+    fetch("/static_stations").then(response => {
+        return response.json();
+    }).then(data => {
+
+    var station_output = "<form><label for='station_option'>Choose a station: </label>"
+    + "<select name='station_option' id='station_option' onchange='setPredictionValue(this)'>"
+    + "<option value='' disabled selected> ------------- </option><br>";
+
+    data.forEach(station => {
+        station_output += "<option value=" + station.number + ">" + station.name + "</option><br>";
+    })
+
+    station_output += "</select></form>";
+    station_output += "<form><label for='future_hour'>Future hour and minute:</label>"
+    + "<input type='text'><button type='button' id='InfoButton' onclick='infoBtnClick()'>submit</button></form>";
+    // add a post 
+    
+    document.getElementById("prediction_area").innerHTML = station_output;
+    }).catch(err => {
+        console.log("Error:", err);
+    })
+}
+
+
+// Function to set user choice station and trigger prediction function
+function setPredictionValue(control) {
+    var choice = control.value;
+    prediction(choice);
+}

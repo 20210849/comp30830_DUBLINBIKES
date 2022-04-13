@@ -34,9 +34,13 @@
 
     <h2>PREDICT FUTURE BIKE AVAILABILITY</h2>
     <div id="prediction_area"></div>
+    <div id = "total_stands"></div>
+    <div id = "prediction_result"></div>
+    
+    
     <script>
         stationDropDown();
-        //predictionDropDown();
+        predictionDropDown();
         displayWeather();
 
         google.charts.load('current', {'packages':['corechart']});

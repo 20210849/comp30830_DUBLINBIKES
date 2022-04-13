@@ -1,15 +1,18 @@
 from ctypes.wintypes import PLARGE_INTEGER
 import json
+import pickle
 import pymysql
 from sqlalchemy import *
 from sqlalchemy import Table, Column, Integer, Float, String, DateTime
 from sqlalchemy import MetaData
 from sqlalchemy import create_engine
-from flask import Flask, render_template, request
+from flask import Flask, jsonify, render_template, request
 from jinja2 import Template
 from sqlalchemy import create_engine, select, MetaData, Table, and_
 import pandas as pd
 from joblib import dump, load
+import numpy as np
+from sklearn.linear_model import LinearRegression
 
 app = Flask(__name__)
 NAME = "Dublin"
@@ -111,19 +114,44 @@ def weather_forecast():
 
     return df.to_json(orient="records")
 
-
 @app.route('/predict/<int:station_id>')
-def predict(station_id):
-    model = load('availabilitypredictions.joblib')
-    avail_predict = model.predict([[station_id, 2, 5, 2, 4]])
+def predict_station(station_id):
+    print("************************")
 
-    predict_list = avail_predict.tolist()
-    predict_dict = {"bikes": predict_list[0]}
-    result = json.dumps(predict_dict)
+    with open('Flask_App/static/model_{}.pkl'.format(station_id), 'rb') as handle:
+        model = pickle.load(handle)
+        prediction = model.predict([[9.0,56.0,283.67,79.0,1009.0,75.0,10000.0,9.26,0,0,0,0,0,1,0,0,1,0,0]])
+        print("pklfine pklfine pklfine pklfine pklfine pklfine pklfine pklfine pklfine pklfine pklfine pklfine pklfine pklfine pklfine pklfine")
+        
+        predict_list = prediction.tolist()
+        result = str(predict_list[0])
 
-    return result
+        print(result)
+        return result
+
+    # input_model = station_dfs[ID][modelfeatures]
+    # output = station_dfs[ID]['available_bikes']
+    # modelfeature = ['hour_x','minute_x', 'temp', 'humidity', 'pressure', 'Clouds', 'visibility',
+    # 'wind_speed', 'weekday_Friday', 'weekday_Monday', 'weekday_Saturday','weekday_Sunday', 'weekday_Thursday', 'weekday_Tuesday',
+    # 'weekday_Wednesday', 'weather_main_Clear', 'weather_main_Clouds', 'weather_main_Drizzle', 'weather_main_Rain']
+    
+    # station_dfs = dict()
+    # station_dfs[station_number] = [9.0,56.0,283.67,79.0,1009.0,75.0,10000.0,9.26,0,0,0,0,0,1,0,0,1,0,0]
+    # X_test = station_dfs[station_number][0]
 
 
+    # engine = create_engine("mysql+pymysql://{}:{}@{}:{}/{}".format(USER, PASSWORD, HOST, PORT, DATABASE), echo=True)
+    # connection = engine.connect()  
+
+    # sql = "SELECT temp, humidity, pressure, Clouds, visibility, wind_speed, dt, weather_main FROM dbbikes1.weather_Dublin " \
+    #    "ORDER BY dt DESC " \
+    #    "LIMIT 1;" 
+        
+    # weather = pd.read_sql(sql, engine)
+    ### used in ML learning 
+    ### if else sentence to change 'dt' into 'weekday_Monday' and so on ...
+    ### if else sentence to change 'weather_main' into 'weather_main_Clear' and so on ...
+    
 
 if __name__ == "__main__":
     # app.run(debug=True)
