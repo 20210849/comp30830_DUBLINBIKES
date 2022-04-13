@@ -118,7 +118,7 @@ def weather_forecast():
 def predict_station(station_id):
     print("************************")
 
-    with open('Flask_App/static/model_{}.pkl'.format(station_id), 'rb') as handle:
+    with open('./static/model_{}.pkl'.format(station_id), 'rb') as handle:
         model = pickle.load(handle)
         prediction = model.predict([[9.0,56.0,283.67,79.0,1009.0,75.0,10000.0,9.26,0,0,0,0,0,1,0,0,1,0,0]])
         print("pklfine pklfine pklfine pklfine pklfine pklfine pklfine pklfine pklfine pklfine pklfine pklfine pklfine pklfine pklfine pklfine")
