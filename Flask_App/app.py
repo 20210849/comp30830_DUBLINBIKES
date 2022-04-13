@@ -36,7 +36,7 @@ def stations():
     engine = create_engine("mysql+pymysql://{}:{}@{}:{}/{}".format(USER, PASSWORD, HOST, PORT, DATABASE), echo=True)
     connection = engine.connect()   
 
-    sql = "SELECT s.number, s.name, s.address, s.position_lat, s.position_lng, a.available_bike_stands, a.available_bikes, " \
+    sql = "SELECT s.number,s.bike_stands, s.name, s.address, s.position_lat, s.position_lng, a.available_bike_stands, a.available_bikes, " \
           "a.status, MAX(a.last_update) AS `current_availability` " \
           "FROM dbbikes1.availability as a " \
           "INNER JOIN dbbikes1.station as s ON s.number = a.number " \
