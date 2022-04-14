@@ -35,7 +35,6 @@ function initMap() {
                 content: "<h3>" + station.name + "</h3>"
                 + "<p><b>Available Bikes: </b>" + station.available_bikes + "</p>"
                 + "<p><b>Available Stands: </b>" + station.available_bike_stands + "</p>"
-                + "<p><b>Parking Slots: </b>" + station.available_bike_stands + "</p>"
                 + "<p><b>Status: </b>" + station.status + "</p>"
                 });
                 currWindow = infowindow;
