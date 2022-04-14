@@ -81,3 +81,15 @@ li {
     display: flex;
     justify-content: space-around;
 }
+
+#total_stands{
+    font-size: 20px;
+    display: flex;
+    justify-content: space-around;
+}
+
+#prediction_result{
+    font-size: 20px;
+    display: flex;
+    justify-content: space-around;
+}
