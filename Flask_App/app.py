@@ -1,4 +1,5 @@
 from ctypes.wintypes import PLARGE_INTEGER
+from datetime import datetime
 import json
 import pickle
 import pymysql
@@ -120,7 +121,11 @@ def predict_station(station_id):
 
     with open('./static/pklFile/model_{}.pkl'.format(station_id), 'rb') as handle:
         model = pickle.load(handle)
-        prediction = model.predict([[9.0,56.0,283.67,79.0,1009.0,75.0,10000.0,9.26,0,0,0,0,0,1,0,0,1,0,0]])
+
+        now_hour = datetime.now().hour
+        
+        now_hour += 1
+        prediction = model.predict([[now_hour,56.0,283.67,79.0,1009.0,75.0,10000.0,9.26,0,0,0,0,0,1,0,0,1,0,0]])
         print("pklfine pklfine pklfine pklfine pklfine pklfine pklfine pklfine pklfine pklfine pklfine pklfine pklfine pklfine pklfine pklfine")
         
         predict_list = prediction.tolist()
@@ -134,21 +139,16 @@ def predict_station(station_id):
     # modelfeature = ['hour_x','minute_x', 'temp', 'humidity', 'pressure', 'Clouds', 'visibility',
     # 'wind_speed', 'weekday_Friday', 'weekday_Monday', 'weekday_Saturday','weekday_Sunday', 'weekday_Thursday', 'weekday_Tuesday',
     # 'weekday_Wednesday', 'weather_main_Clear', 'weather_main_Clouds', 'weather_main_Drizzle', 'weather_main_Rain']
-    
-    # station_dfs = dict()
-    # station_dfs[station_number] = [9.0,56.0,283.67,79.0,1009.0,75.0,10000.0,9.26,0,0,0,0,0,1,0,0,1,0,0]
-    # X_test = station_dfs[station_number][0]
-
 
     # engine = create_engine("mysql+pymysql://{}:{}@{}:{}/{}".format(USER, PASSWORD, HOST, PORT, DATABASE), echo=True)
     # connection = engine.connect()  
 
-    # sql = "SELECT temp, humidity, pressure, Clouds, visibility, wind_speed, dt, weather_main FROM dbbikes1.weather_Dublin " \
-    #    "ORDER BY dt DESC " \
-    #    "LIMIT 1;" 
+    # sql = "SELECT temp, humidity, pressure, Clouds, visibility, wind_speed, dt, weather_main FROM dbbikes1.future_weather " \
+    #    "Where dt == datetime.now().hour;" 
+        #### +1, +2 
         
     # weather = pd.read_sql(sql, engine)
-    ### used in ML learning 
+    ### the code used in ML learning 
     ### if else sentence to change 'dt' into 'weekday_Monday' and so on ...
     ### if else sentence to change 'weather_main' into 'weather_main_Clear' and so on ...
     

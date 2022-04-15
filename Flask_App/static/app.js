@@ -253,9 +253,8 @@ function prediction(station) {
     console.log(data);
 
     totalStands(station);
-
     var avaiable_prediction = data;
-    var output = "avaiable bikes: " + avaiable_prediction;
+    var output = "one hour later avaiable bikes: " + avaiable_prediction;
 
     document.getElementById("prediction_result").innerHTML = output;
 
@@ -280,10 +279,6 @@ function predictionDropDown() {
     })
 
     station_output += "</select></form>";
-    station_output += "<form><label for='future_hour'>Future hour and minute:</label>"
-    + "<input type='text' style='border:1px solid #ccc;padding:6px 12px;border-radius:5px'><button type='button' style='border:1px solid #ccc;padding:6px 12px;border-radius:5px;color:#333' id='InfoButton' onclick='infoBtnClick()'>submit</button></form>";
-    // add a post 
-    
     document.getElementById("prediction_area").innerHTML = station_output;
     }).catch(err => {
         console.log("Error:", err);
