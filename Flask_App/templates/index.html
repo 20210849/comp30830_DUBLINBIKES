@@ -16,8 +16,13 @@
     <header id="heading-banner">
         <h1>Dublin Bikes</h1>
     </header>
-
-    <div id="weather"></div>
+    <div id="weatherAll" class="panel">
+        
+        <div id="openweathermap-widget-21" class="weatherOne"></div>
+        <div id="weather" class="weatherTwo"></div>
+    </div>
+    
+  
 
     <div id="user_choice">
         <div id="station_selection"></div>
@@ -27,7 +32,7 @@
 
     <!--Line charts-->
     <div id="analysis_title"></div>
-    <div id="analysis_area">
+    <div id="analysis_area"  class="panel">
             <div id="weekly_chart"></div>
             <td><div id="hour_chart"></div>
     </div>
@@ -36,6 +41,8 @@
     <div id="prediction_area"></div>
     <div id = "total_stands"></div>
     <div id = "prediction_result"></div>
+        
+
  
 
     
@@ -53,7 +60,8 @@
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDoxMoc5jrCrg7c7noB88amyEFVFB-1o10&callback=initMap&libraries=&v=weekly"
     async></script>
     
-   
+<script src='//openweathermap.org/themes/openweathermap/assets/vendor/owm/js/d3.min.js'></script><script>window.myWidgetParam ? window.myWidgetParam : window.myWidgetParam = [];  window.myWidgetParam.push({id: 21,cityid: '5344157',appid: 'ed9aa5a1bdd08e3f576004927826fcae',units: 'metric',containerid: 'openweathermap-widget-21',  });  (function() {var script = document.createElement('script');script.async = true;script.charset = "utf-8";script.src = "//openweathermap.org/themes/openweathermap/assets/vendor/owm/js/weather-widget-generator.js";var s = document.getElementsByTagName('script')[0];s.parentNode.insertBefore(script, s);  })();</script>
+<script>window.myWidgetParam ? window.myWidgetParam : window.myWidgetParam = [];  window.myWidgetParam.push({id: 22,cityid: '5344157',appid: 'ed9aa5a1bdd08e3f576004927826fcae',units: 'metric',containerid: 'openweathermap-widget-22',  });  (function() {var script = document.createElement('script');script.async = true;script.charset = "utf-8";script.src = "//openweathermap.org/themes/openweathermap/assets/vendor/owm/js/weather-widget-generator.js";var s = document.getElementsByTagName('script')[0];s.parentNode.insertBefore(script, s);  })();</script>
 
 
 </body>

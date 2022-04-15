@@ -57,7 +57,7 @@ function stationDropDown() {
     }).then(data => {
 
     var station_output = "<label for='station_option'>Choose a station: </label>"
-    + "<select name='station_option' id='station_option' onchange='setValue(this)'>"
+    + "<select name='station_option' id='station_option'  style='border:1px solid #ccc;padding:6px 12px;border-radius:5px' onchange='setValue(this)'>"
     + "<option value='' disabled selected> ------------- </option><br>";
 
     data.forEach(station => {
@@ -215,11 +215,10 @@ function displayWeather() {
    var current_time = today.getHours();
    console.log(current_date);
    console.log(current_time);
-
-    var weather_output = "<ul>" + "<li><b>Current Temperature: </b>" + data[0].weather_description + "</li>"
-    + "<li><b>Wind Speed: </b>" + data[0].weather_main + "</li>"
-    + "<li><b>Chances of Rain: </b>" + data[0].humidity + "%</li>"
-    + "<li><b>Humidity: </b>" + data[0].wind_speed + "%</li></ul>";
+   var weather_output ="<div class='ctbox'><div style='width: 190px; height: 130px;text-align:center' class='weatherOne'><h3>Visibility:</h3><hr><span class='title'>"+data[0].visibility+"</span></div>"
+   weather_output += "<div style='width: 190px; height: 130px;text-align:center' class='weatherTwo'><h3>Sunrise: </h3><hr><span class='title'>"+ data[0].sunrise + "</span></div>"; 
+   weather_output += "<div style='width: 190px; height: 130px;text-align:center' class='weatherTwo'><h3>Sunset: </h3><hr><span class='title'>"+ data[0].sunset + "</span></div></div>"; 
+   
 
     document.getElementById("weather").innerHTML = weather_output;
     }).catch(err => {
@@ -273,7 +272,7 @@ function predictionDropDown() {
     }).then(data => {
 
     var station_output = "<form><label for='station_option'>Choose a station: </label>"
-    + "<select name='station_option' id='station_option' onchange='setPredictionValue(this)'>"
+    + "<select name='station_option' id='station_option' style='border:1px solid #ccc;padding:6px 12px;border-radius:5px' onchange='setPredictionValue(this)'>"
     + "<option value='' disabled selected> ------------- </option><br>";
 
     data.forEach(station => {
@@ -282,7 +281,7 @@ function predictionDropDown() {
 
     station_output += "</select></form>";
     station_output += "<form><label for='future_hour'>Future hour and minute:</label>"
-    + "<input type='text'><button type='button' id='InfoButton' onclick='infoBtnClick()'>submit</button></form>";
+    + "<input type='text' style='border:1px solid #ccc;padding:6px 12px;border-radius:5px'><button type='button' style='border:1px solid #ccc;padding:6px 12px;border-radius:5px;color:#333' id='InfoButton' onclick='infoBtnClick()'>submit</button></form>";
     // add a post 
     
     document.getElementById("prediction_area").innerHTML = station_output;

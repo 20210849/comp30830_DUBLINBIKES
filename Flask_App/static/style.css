@@ -64,16 +64,7 @@ select, input[type="date"] {
 }
 
 
-/*weather styles*/
-ul {
-    display: flex;
-    justify-content: space-evenly;
-}
 
-li {
-    list-style-type: none;
-    display: inline;
-}
 
 
 /*prediction area styles*/
@@ -81,3 +72,25 @@ li {
     display: flex;
     justify-content: space-around;
 }
+.ctbox
+{
+    margin-left: 70px;
+    margin-top: 55px;
+     
+    }
+.weatherOne,.weatherTwo{
+    width: 50%;
+    height: 300px;
+    border:0px solid #ccc;
+    float: left;
+    box-sizing: border-box;
+    }
+.title {
+        color:#004b6b;
+        font-size:20px;
+    }
+.panel {
+        border: 1px solid #ccc;
+        background: white;
+        border-radius: 3px;
+      }

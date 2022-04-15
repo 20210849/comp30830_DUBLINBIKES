@@ -105,7 +105,7 @@ def weather_forecast():
     connection = engine.connect()  
     print("************************")
 
-    sql = f"""SELECT weather_description, weather_main, humidity, wind_speed
+    sql = f"""SELECT weather_description, weather_main, humidity, wind_speed,visibility,sunrise,sunset,pressure 
     FROM dbbikes1.weather_Dublin
     ORDER BY dt DESC
     LIMIT 1;"""
